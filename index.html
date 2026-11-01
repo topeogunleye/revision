@@ -6,7 +6,7 @@
   <meta name="description" content="A small collection of notes and examples.">
   <meta name="color-scheme" content="light dark">
   <title>Notes</title>
-  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
@@ -108,6 +108,12 @@
       font-weight: 700;
     }
 
+    .back-link {
+      display: inline-block;
+      margin-bottom: 12px;
+      color: var(--accent);
+    }
+
     .arrow {
       flex: 0 0 auto;
       color: var(--accent);
@@ -144,46 +150,164 @@
   </style>
 </head>
 <body>
-  <main>
+  <main id="home-view">
     <header>
       <h1>Notes</h1>
       <p>A small collection of notes and examples.</p>
     </header>
 
     <nav class="guides" aria-label="Topics">
-      <a class="guide" href="capitalize-remove-spaces-guided-tutor.html">
+      <a class="guide" href="capitalize-remove-spaces-guided-tutor.html" data-note="note-01">
         <span class="guide-title">Note 01</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
-      <a class="guide" href="decimal-to-binary-guided-tutor.html">
+      <a class="guide" href="decimal-to-binary-guided-tutor.html" data-note="note-02">
         <span class="guide-title">Note 02</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
-      <a class="guide" href="in-place-matrix-rotation-guided-tutor.html">
+      <a class="guide" href="in-place-matrix-rotation-guided-tutor.html" data-note="note-03">
         <span class="guide-title">Note 03</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
-      <a class="guide" href="list-statistics-guided-tutor.html">
+      <a class="guide" href="list-statistics-guided-tutor.html" data-note="note-04">
         <span class="guide-title">Note 04</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
-      <a class="guide" href="matrix-multiplication-guided-tutor.html">
+      <a class="guide" href="matrix-multiplication-guided-tutor.html" data-note="note-05">
         <span class="guide-title">Note 05</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
-      <a class="guide" href="prime-checker-guided-tutor.html">
+      <a class="guide" href="prime-checker-guided-tutor.html" data-note="note-06">
         <span class="guide-title">Note 06</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
-      <a class="guide" href="fibonacci-primer.html">
+      <a class="guide" href="fibonacci-primer.html" data-note="note-07">
         <span class="guide-title">Note 07</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
-      <a class="guide" href="roman-numeral-guided-tutor.html">
+      <a class="guide" href="roman-numeral-guided-tutor.html" data-note="note-08">
         <span class="guide-title">Note 08</span>
         <span class="arrow" aria-hidden="true">→</span>
       </a>
     </nav>
   </main>
+
+  <main id="guide-view" hidden>
+    <a class="back-link" href="index.html" data-home>← Notes</a>
+    <p id="load-status" role="status" aria-live="polite"></p>
+    <div id="note-content"></div>
+  </main>
+
+  <script>
+    const guides = {
+      "note-01": "capitalize-remove-spaces-guided-tutor.html",
+      "note-02": "decimal-to-binary-guided-tutor.html",
+      "note-03": "in-place-matrix-rotation-guided-tutor.html",
+      "note-04": "list-statistics-guided-tutor.html",
+      "note-05": "matrix-multiplication-guided-tutor.html",
+      "note-06": "prime-checker-guided-tutor.html",
+      "note-07": "fibonacci-primer.html",
+      "note-08": "roman-numeral-guided-tutor.html"
+    };
+
+    const homeView = document.getElementById("home-view");
+    const guideView = document.getElementById("guide-view");
+    const noteContent = document.getElementById("note-content");
+    const loadStatus = document.getElementById("load-status");
+    let activeNoteStyle;
+    let renderRequest = 0;
+
+    function showHome() {
+      renderRequest++;
+      activeNoteStyle?.remove();
+      activeNoteStyle = undefined;
+      noteContent.replaceChildren();
+      loadStatus.textContent = "";
+      guideView.hidden = true;
+      homeView.hidden = false;
+      document.title = "Notes";
+    }
+
+    async function showNote(noteId) {
+      const file = guides[noteId];
+      if (!file) {
+        showHome();
+        return;
+      }
+
+      const request = ++renderRequest;
+      activeNoteStyle?.remove();
+      activeNoteStyle = undefined;
+      noteContent.replaceChildren();
+      homeView.hidden = true;
+      guideView.hidden = false;
+      loadStatus.textContent = "Loading note…";
+      document.title = `Note ${noteId.slice(-2)}`;
+
+      try {
+        const response = await fetch(file);
+        if (!response.ok) {
+          throw new Error(`Request failed with status ${response.status}`);
+        }
+
+        const source = new DOMParser().parseFromString(await response.text(), "text/html");
+        const sourceMain = source.querySelector("body main");
+        const sourceStyle = source.head.querySelector("style");
+        if (!sourceMain || !sourceStyle) {
+          throw new Error("The note is missing its main content or stylesheet.");
+        }
+
+        if (request !== renderRequest) return;
+
+        const noteStyle = document.createElement("style");
+        noteStyle.textContent = sourceStyle.textContent;
+        document.head.append(noteStyle);
+        activeNoteStyle = noteStyle;
+        noteContent.innerHTML = sourceMain.innerHTML;
+        loadStatus.textContent = "";
+
+        const sourceScript = source.body.querySelector("script");
+        if (sourceScript) {
+          const noteScript = document.createElement("script");
+          noteScript.textContent = sourceScript.textContent;
+          document.body.append(noteScript);
+          noteScript.remove();
+        }
+      } catch (error) {
+        if (request !== renderRequest) return;
+        console.error(`Unable to load ${file}`, error);
+        loadStatus.textContent = "This note could not be loaded. Open Notes through a web server and try again.";
+        document.title = "Notes";
+      }
+    }
+
+    document.addEventListener("click", event => {
+      if (!(event.target instanceof Element)) return;
+      const noteLink = event.target.closest("a[data-note]");
+      if (noteLink && !event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+        event.preventDefault();
+        history.pushState(null, "", `#${noteLink.dataset.note}`);
+        showNote(noteLink.dataset.note);
+        return;
+      }
+
+      const homeLink = event.target.closest("a[data-home]");
+      if (homeLink && !event.defaultPrevented && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+        event.preventDefault();
+        history.pushState(null, "", location.pathname + location.search);
+        showHome();
+      }
+    });
+
+    window.addEventListener("popstate", () => {
+      const noteId = location.hash.slice(1);
+      if (guides[noteId]) showNote(noteId);
+      else showHome();
+    });
+
+    if (guides[location.hash.slice(1)]) {
+      showNote(location.hash.slice(1));
+    }
+  </script>
 </body>
 </html>
