@@ -3,61 +3,187 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="Student-created Python practice guides for related programming problems.">
-  <title>Python Practice Guides</title>
+  <meta name="description" content="A small collection of notes and examples.">
+  <meta name="color-scheme" content="light dark">
+  <title>Notes</title>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root {
       color-scheme: light;
-      font-family: system-ui, sans-serif;
-      line-height: 1.6;
-      color: #202124;
-      background: #f5f7fa;
+      --bg: #f3f6fb;
+      --grid: #dde5f2;
+      --card: #fff;
+      --ink: #16223a;
+      --mute: #53617c;
+      --line: #c9d4e8;
+      --accent: #2b59c3;
+      font-family: "Atkinson Hyperlegible", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        color-scheme: dark;
+        --bg: #0f1626;
+        --grid: #18233a;
+        --card: #16203a;
+        --ink: #e8eefb;
+        --mute: #9db0d3;
+        --line: #2c3b5e;
+        --accent: #7ea2ff;
+      }
+    }
+
+    * {
+      box-sizing: border-box;
     }
 
     body {
-      max-width: 760px;
+      min-height: 100vh;
+      margin: 0;
+      background-color: var(--bg);
+      background-image:
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
+      background-size: 28px 28px;
+      color: var(--ink);
+      font-size: 17px;
+      line-height: 1.6;
+    }
+
+    main {
+      width: min(100% - 36px, 740px);
       margin: 0 auto;
-      padding: 2rem 1.25rem;
+      padding: 48px 0 32px;
+    }
+
+    header {
+      margin-bottom: 26px;
     }
 
     h1 {
+      margin: 0;
+      font-size: clamp(1.8rem, 5vw, 2.25rem);
       line-height: 1.2;
     }
 
-    li {
-      margin: 0.65rem 0;
+    header p {
+      margin: 10px 0 0;
+      color: var(--mute);
     }
 
-    a {
-      color: #1457a6;
+    .guides {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
     }
 
-    .source {
-      margin-top: 2.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid #cbd2dc;
-      font-size: 0.95rem;
+    .guide {
+      display: flex;
+      min-height: 92px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 18px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--card);
+      color: var(--ink);
+      text-decoration: none;
+      transition: border-color 140ms ease, transform 140ms ease;
+    }
+
+    .guide:hover {
+      transform: translateY(-2px);
+      border-color: var(--accent);
+    }
+
+    .guide:focus-visible {
+      outline: 3px solid var(--accent);
+      outline-offset: 3px;
+    }
+
+    .guide-title {
+      font-weight: 700;
+    }
+
+    .arrow {
+      flex: 0 0 auto;
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        font-size: 16px;
+      }
+
+      main {
+        padding-top: 32px;
+      }
+
+      .guides {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .guide {
+        min-height: 72px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 <body>
   <main>
-    <h1>Python Practice Guides</h1>
-    <p>Student-created guides for practicing concepts that appear in related Python problems.</p>
-    <ul>
-      <li><a href="capitalize-remove-spaces-guided-tutor.html">Capitalize words and remove spaces</a></li>
-      <li><a href="decimal-to-binary-guided-tutor.html">Decimal to binary</a></li>
-      <li><a href="in-place-matrix-rotation-guided-tutor.html">In-place matrix rotation</a></li>
-      <li><a href="list-statistics-guided-tutor.html">List statistics</a></li>
-      <li><a href="matrix-multiplication-guided-tutor.html">Matrix multiplication</a></li>
-      <li><a href="prime-checker-guided-tutor.html">Prime checker and prime sum</a></li>
-      <li><a href="q21-fibonacci-primer.html">Fibonacci sequence and even sum</a></li>
-      <li><a href="roman-numeral-guided-tutor.html">Roman numerals</a></li>
-    </ul>
-    <p class="source">
-      These guides are maintained in the
-      <a href="https://github.com/topeogunleye/python-drills/tree/main/week7/Solutions">public python-drills repository</a>.
-    </p>
+    <header>
+      <h1>Notes</h1>
+      <p>A small collection of notes and examples.</p>
+    </header>
+
+    <nav class="guides" aria-label="Topics">
+      <a class="guide" href="capitalize-remove-spaces-guided-tutor.html">
+        <span class="guide-title">Note 01</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="guide" href="decimal-to-binary-guided-tutor.html">
+        <span class="guide-title">Note 02</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="guide" href="in-place-matrix-rotation-guided-tutor.html">
+        <span class="guide-title">Note 03</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="guide" href="list-statistics-guided-tutor.html">
+        <span class="guide-title">Note 04</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="guide" href="matrix-multiplication-guided-tutor.html">
+        <span class="guide-title">Note 05</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="guide" href="prime-checker-guided-tutor.html">
+        <span class="guide-title">Note 06</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="guide" href="fibonacci-primer.html">
+        <span class="guide-title">Note 07</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+      <a class="guide" href="roman-numeral-guided-tutor.html">
+        <span class="guide-title">Note 08</span>
+        <span class="arrow" aria-hidden="true">→</span>
+      </a>
+    </nav>
   </main>
 </body>
 </html>
