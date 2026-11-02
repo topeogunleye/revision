@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maximum Subarray: guided tutor</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6fb;--grid:#dde5f2;--card:#fff;--ink:#16223a;--mute:#53617c;--line:#c9d4e8;--row:#ffd166;--col:#4cc9f0;--hit:#2ec4a0;--code:#101a2e;--codeink:#e6edf9;--accent:#2b59c3;--ok:#1f7a3f;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--grid:#18233a;--card:#16203a;--ink:#e8eefb;--mute:#9db0d3;--line:#2c3b5e;--row:#e0a800;--col:#1b9fc9;--hit:#26a688;--accent:#7ea2ff;--ok:#5cc47f;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#0f1626;--grid:#18233a;--card:#16203a;--ink:#e8eefb;--mute:#9db0d3;--line:#2c3b5e;--row:#e0a800;--col:#1b9fc9;--hit:#26a688;--accent:#7ea2ff;--ok:#5cc47f;--bad:#ff8a80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:740px;margin:0 auto;padding:26px 18px 70px}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0}h2{font-size:1.35rem;margin:0 0 .5em}h3{font-size:1.05rem;margin:1em 0 .3em}p{margin:.5em 0}
+.lead,.mut{color:var(--mute)}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px 16px;margin:20px 0}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+code{background:var(--grid);padding:1px 6px;border-radius:4px;font-size:.88em}
+pre{background:var(--code);color:var(--codeink);padding:12px 15px;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.55;margin:.7em 0}
+.rule{border-left:4px solid var(--accent);padding:6px 14px;background:var(--grid);border-radius:0 8px 8px 0;margin:.7em 0}
+.mat{display:inline-grid;grid-template-columns:repeat(var(--cols,2),auto);gap:4px;padding:6px 10px;border-left:3px solid var(--ink);border-right:3px solid var(--ink);border-radius:6px}
+.mat span{min-width:2.3rem;height:2.3rem;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--bg);font-family:"JetBrains Mono",monospace;font-weight:700}
+.mat .r{background:var(--row);color:#16223a}.mat .c{background:var(--col);color:#16223a}.mat .both{background:var(--hit);color:#fff}
+.eq{display:flex;flex-direction:column;gap:8px;align-items:center;margin:12px 0;overflow-x:auto}
+.sum{text-align:center;min-height:3.4em;font-size:.95rem}
+button{font:inherit;cursor:pointer;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;padding:5px 13px}
+button:hover:not(:disabled){background:var(--accent);color:#fff}button:disabled{opacity:.4;cursor:default}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+details{border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:.6em 0;background:var(--bg)}details details{background:var(--card)}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.9rem}th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}th{background:var(--grid)}
+ul{padding-left:1.2em;margin:.4em 0}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--grid);font-size:.85rem}.pass{color:var(--ok);font-weight:700}
+.step{border-left:4px solid var(--accent);padding-left:14px;margin:1.1em 0}.q{font-weight:700}
+.opt{display:block;width:100%;text-align:left;margin:.3em 0}.opt.right{border-color:var(--ok);background:var(--grid);color:var(--ink)}.opt.wrong{border-color:var(--bad);color:var(--ink)}.fb{min-height:1.4em}
+@media (max-width:520px){body{font-size:16px}section{padding:16px 14px}h1{font-size:1.6rem}.mat span{min-width:1.9rem;height:1.9rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<h1>Maximum Subarray: brute force vs single pass</h1>
+<p class="lead">By the end you will write two versions, one slow and obvious, one fast and clever, and show they always agree. About 25–30 minutes.</p>
+
+<section>
+<h2>1. Understanding the problem</h2>
+<p>You get a list of whole numbers, some negative. Pick a <b>contiguous slice</b> (numbers sitting side by side, no gaps). Add them up. Find the slice with the biggest total, and report that total plus where the slice starts and ends.</p>
+<p>Return <code>(sum, start, end)</code> as a tuple. Both indices are positions in the list, and <code>end</code> is included.</p>
+<div class="rule"><b>Rules:</b> no <code>max()</code>, <code>min()</code>, <code>sum()</code>, slicing or imports. A list of only negatives returns its single largest element, never 0. They are banned so you practise the logic by hand.</div>
+<div class="rule"><b>Tie rule (my assumption, so both functions can agree):</b> if several slices share the best sum, return the one that starts earliest; if that still ties, the one that ends earliest. Your examples have no ties, but a "must match on every test" rule needs one.</div>
+</section>
+
+<section>
+<h2>2. Prerequisite: slices, indices and running totals</h2>
+<p>A list is numbered from 0. In <code>[4, -1, 2, 1]</code>, <code>4</code> is at index 0 and <code>1</code> is at index 3. A slice is described by its <b>start</b> index and <b>end</b> index. A <b>running total</b> is a number you keep adding to as you walk along, instead of re-adding everything each time.</p>
+<pre>nums = [4, -1, 2, 1]
+# slice (1, 3) means the numbers at positions 1, 2, 3
+# a list of n numbers has n*(n+1)/2 slices</pre>
+<div class="quiz" data-correct="1" data-right="Right: 4 and 2 have the -1 between them, so there is a gap." data-wrong="Not quite. Check whether the numbers are neighbours in the list.">
+<p class="q">Which one is NOT a contiguous slice of <code>[4, -1, 2, 1]</code>?</p>
+<button class="opt">[-1, 2]</button><button class="opt">[4, 2]</button><button class="opt">[2, 1]</button><p class="fb"></p></div>
+<div class="quiz" data-correct="2" data-right="Right: indices 3, 4, 5, 6 (end is included)." data-wrong="Not quite. Write out the indices from start to end, both included.">
+<p class="q">The slice with start 3 and end 6 has how many numbers?</p>
+<button class="opt">3</button><button class="opt">5</button><button class="opt">4</button><p class="fb"></p></div>
+</section>
+
+<section>
+<h2>3. How it works</h2>
+<p><b>Brute force:</b> try every start and every end, add each slice up, remember the best. Simple, but slow: 9 numbers means 45 slices, 1000 numbers means about 500,000.</p>
+<p><b>Single pass:</b> walk left to right once and, at each number, keep one fact: the best total of a slice that <i>ends right here</i>. Click through the example. <span class="mut">Yellow = the slice ending here, blue = the number we just reached, green = best slice seen so far.</span></p>
+<div class="eq" id="grids"></div>
+<div class="sum" id="note"></div>
+<p style="text-align:center"><button id="prev">Back</button> <button id="next">Next</button> <span class="pill" id="pos"></span></p>
+<div class="rule">Top row: the numbers. Bottom row: best total of a slice ending at that position.</div>
+<h3>Practice by hand</h3>
+<p><b>P1.</b> <code>[3, -1, 2]</code>: best sum and indices?
+<details><summary>Reveal</summary>4 at (0, 2). Dipping through the -1 is worth it because the 2 after it pays you back.</details></p>
+<p><b>P2.</b> <code>[-4, -2, -7]</code>: best sum and indices?
+<details><summary>Reveal</summary>-2 at (1, 1). Every slice is negative, so the least bad single number wins.</details></p>
+<p><b>P3.</b> <code>[2, -5, 3, -1, 2]</code>: best sum and indices?
+<details><summary>Reveal</summary>4 at (2, 4). The -5 is too costly to carry, so you start fresh at the 3.</details></p>
+<p><b>P4 (tricky).</b> <code>[2, -2, 3]</code>: two different slices give the best sum. Which does the tie rule choose?
+<details><summary>Reveal</summary>Sum 3 at (0, 2), not (2, 2). Both total 3, and the earliest start wins.</details></p>
+</section>
+
+<section>
+<h2>4. Translating it into Python</h2>
+<div class="step">
+<p><b>Step 1: Empty list.</b> Pick one convention (for example return <code>None</code>) and use it in both functions.</p>
+<p class="q">Why decide this before writing any loop?</p>
+<details><summary>Reveal</summary>Starting values usually come from the first element, which does not exist for an empty list.</details>
+</div>
+<div class="step">
+<p><b>Step 2: Starting values for the best.</b> Create the variables that remember the best sum and its two indices.</p>
+<p class="q">If best starts at 0, what goes wrong for <code>[-3, -1, -2]</code>?</p>
+<details><summary>Reveal</summary>Nothing beats 0, so the answer stays 0 and the indices never update. Start from a real element.</details>
+<details><summary>Stuck?</summary>
+<details><summary>Nudge</summary>Which value in the list is guaranteed to be a real slice?</details>
+<details><summary>Bigger hint</summary>A single number is a slice, so the first number is a valid starting best.</details>
+<details><summary>Pseudocode</summary>Set best sum to the first number, and both best indices to 0.</details>
+</details>
+</div>
+<div class="step">
+<p><b>Step 3: Brute force loops.</b> Choose each start, then each end at or after it, building the slice total without <code>sum()</code> or slicing.</p>
+<p class="q">When the end moves one step right, how can you get the new total cheaply?</p>
+<details><summary>Reveal</summary>Add just the new number to the total you already have. Reset the total when the start changes.</details>
+<details><summary>Stuck?</summary>
+<details><summary>Nudge</summary>The outer loop picks where a slice begins.</details>
+<details><summary>Bigger hint</summary>The inner loop starts at the outer index, so a slice has at least one number.</details>
+<details><summary>Pseudocode</summary>For each start: set total to 0. For each end from start to the last position: add that number to total; if total is strictly larger than the best, remember total, start, end.</details>
+</details>
+</div>
+<div class="step">
+<p><b>Step 4: Single pass.</b> One loop. Keep the running total of the slice ending here, and the index where that slice started.</p>
+<p class="q">Looking at the previous running total, when is extending worse than starting fresh?</p>
+<details><summary>Reveal</summary>When the previous total is negative: it can only drag the new number down.</details>
+<details><summary>Stuck?</summary>
+<details><summary>Nudge</summary>Compare "previous total + this number" with "this number alone".</details>
+<details><summary>Bigger hint</summary>Starting fresh also means the slice's start index becomes the current index.</details>
+<details><summary>Pseudocode</summary>If the total before this number is below zero, begin a new slice here (total is this number, start is this index); otherwise add this number to the total. Then, if the total is strictly above the best, record it with the start and this index.</details>
+<details><summary>Tie warning</summary>Test <code>[2, -2, 3]</code>. If the previous total is exactly 0, extending keeps the earlier start, and the tie rule wants that.</details>
+</details>
+</div>
+<h3>Your skeletons</h3>
+<p class="mut">Every TODO carries real logic. Fill them in yourself.</p>
+<pre>def max_subarray_brute(nums):
+    # TODO: empty list convention
+    best_sum = ...    # TODO: starting value
+    best_start = ...  # TODO
+    best_end = ...    # TODO
+    for start in range(...):    # TODO: bounds
+        # TODO: reset the slice total
+        for end in range(...):  # TODO: bounds
+            # TODO: grow the total by one number
+            # TODO: if this slice beats the best, record sum + indices
+    return best_sum, best_start, best_end
+
+def max_subarray_fast(nums):
+    # TODO: empty list, same convention
+    # TODO: setup: running total, where it began, best so far
+    for i in range(...):   # TODO: bounds (one loop only)
+        # TODO: extend the running slice or start fresh at i
+        # TODO: if running total beats the best, record sum + indices
+    return best_sum, best_start, best_end</pre>
+<p><code>start</code> and <code>end</code> are positions in the list; <code>i</code> is the number the fast version has just reached. The fast version's running total always belongs to a slice ending at <code>i</code>.</p>
+<h3>Bonus: the Match / Mismatch loop</h3>
+<p>Make a list of lists (at least five, including <code>[]</code>). For each one, call both functions, compare the results, and print <code>Match</code> or <code>Mismatch</code>.</p>
+</section>
+
+<section>
+<h2>5. Test and debug</h2>
+<h3>Test cases <span class="pill" id="score">0 / 0 passing</span></h3>
+<p class="mut">Expected is <code>(sum, start, end)</code>. Tick the box when both functions agree with it.</p>
+<div class="tw"><table id="tests">
+<tr><th>Case</th><th>Input</th><th>Expected</th><th>Mine</th></tr>
+<tr><td>Given</td><td class="mono">[-2,1,-3,4,-1,2,1,-5,4]</td><td class="mono">(6, 3, 6)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>Single</td><td class="mono">[5]</td><td class="mono">(5, 0, 0)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>All negative</td><td class="mono">[-3,-1,-2]</td><td class="mono">(-1, 1, 1)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>All positive</td><td class="mono">[1,2,3]</td><td class="mono">(6, 0, 2)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>Negative tie</td><td class="mono">[-5,-2,-9,-2]</td><td class="mono">(-2, 1, 1)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>Tie, earlier start</td><td class="mono">[2,-2,3]</td><td class="mono">(3, 0, 2)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>Tie, earlier end</td><td class="mono">[1,-1,1]</td><td class="mono">(1, 0, 0)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>Trailing negative</td><td class="mono">[3,-1,2,-1]</td><td class="mono">(4, 0, 2)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>Start fresh</td><td class="mono">[2,-5,3,-1,2]</td><td class="mono">(4, 2, 4)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+<tr><td>Zeros</td><td class="mono">[0,0,0]</td><td class="mono">(0, 0, 0)</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+</table></div>
+<details><summary>Copyable assert block (calls your functions only)</summary>
+<pre id="asserts">cases = [
+    ([-2,1,-3,4,-1,2,1,-5,4], (6,3,6)), ([5], (5,0,0)), ([-3,-1,-2], (-1,1,1)),
+    ([1,2,3], (6,0,2)), ([-5,-2,-9,-2], (-2,1,1)), ([2,-2,3], (3,0,2)),
+    ([1,-1,1], (1,0,0)), ([3,-1,2,-1], (4,0,2)), ([2,-5,3,-1,2], (4,2,4)),
+    ([0,0,0], (0,0,0)),
+]
+for nums, want in cases:
+    assert max_subarray_brute(nums) == want, ("brute", nums)
+    assert max_subarray_fast(nums) == want, ("fast", nums)
+print("all good")</pre>
+<button onclick="copyAsserts(this)">Copy</button></details>
+<h3>Common beginner mistakes</h3>
+<ul>
+<li><b>All-negative list returns 0.</b> Your best started at 0. Look at the setup lines.</li>
+<li><b>Right sum, wrong end index.</b> You moved the end without checking the sum improved, so trailing negatives crept in.</li>
+<li><b>Right sum, wrong start (fast version).</b> You started fresh but forgot to move the start index.</li>
+<li><b>Versions disagree only on ties.</b> Check <code>&gt;</code> versus <code>&gt;=</code>, and what happens when the running total is exactly 0.</li>
+<li><b>Fast version is secretly slow.</b> A loop inside the loop means it is not a single pass.</li>
+</ul>
+</section>
+
+<section>
+<h2>6. Reflection</h2>
+<p>Brute force checks every slice; the single pass keeps only the best slice ending at each position, because anything dragging the total below zero is better dropped. Writing both lets one check the other.</p>
+<p><b>Q1.</b> Why does a negative running total make "start fresh" the better choice?
+<details><summary>Reveal</summary>Adding a negative to the next number can only lower it, so the number alone is at least as good.</details></p>
+<p><b>Q2.</b> Roughly how many additions does each version do for 1000 numbers, and why does it matter?
+<details><summary>Reveal</summary>Brute force does about 500,000 (growing with the square of the length), the single pass about 1000. The gap grows fast with longer lists.</details></p>
+<p><b>Q3.</b> Why can matching on five lists never prove the versions agree, and what makes a test list worth adding?
+<details><summary>Reveal</summary>Passing tests only shows no failure so far. Good lists target places where a wrong idea would differ: all negatives, ties, trailing negatives, empty input.</details></p>
+</section>
+</main>
+<script>
+function tally(){var c=document.querySelectorAll('#tests input[type=checkbox]'),n=0;c.forEach(function(x){if(x.checked)n++;});var s=document.getElementById('score');s.textContent=n+' / '+c.length+' passing';s.className='pill'+(n===c.length&&c.length?' pass':'');}
+function copyAsserts(b){var t=document.getElementById('asserts').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='Copied';},function(){b.textContent='Select and copy manually';});}
+function grid(M,fn){var g=document.createElement('div');g.className='mat';g.style.setProperty('--cols',M[0].length);M.forEach(function(r,i){r.forEach(function(v,j){var s=document.createElement('span');s.textContent=v;if(fn)fn(s,i,j);g.appendChild(s);});});return g;}
+tally();
+document.querySelectorAll('.quiz').forEach(function(q){var o=q.querySelectorAll('.opt'),f=q.querySelector('.fb'),ok=+q.dataset.correct;o.forEach(function(x,i){x.onclick=function(){o.forEach(function(y){y.classList.remove('right','wrong');});if(i===ok){x.classList.add('right');f.textContent=q.dataset.right;}else{x.classList.add('wrong');f.textContent=q.dataset.wrong;}};});});
+var N=[-2,1,-3,4,-1,2,1,-5,4],R=[-2,1,-2,4,3,5,6,1,5],S=[0,1,1,3,3,3,3,3,3];
+var NOTES=['Index 0: nothing before it, so the slice is just -2. Best so far: -2.','Index 1: extending gives -2+1 = -1, but 1 alone is better. Start fresh. Best so far: 1.','Index 2: the previous total is positive (1), so extend: 1-3 = -2. Best stays 1.','Index 3: previous total is -2, which only hurts. Start fresh with 4. New best: 4.','Index 4: extend 4-1 = 3. Best stays 4.','Index 5: extend 3+2 = 5. New best: 5.','Index 6: extend 5+1 = 6. New best: 6, slice (3, 6).','Index 7: extend 6-5 = 1. Best stays 6.','Index 8: extend 1+4 = 5. Best stays 6 at (3, 6). Done.'];
+var BEST=[0,1,1,3,3,5,6,6,6],BS=[0,1,1,3,3,3,3,3,3],BE=[0,1,1,3,3,5,6,6,6],si=0,box=document.getElementById('grids');
+function showStep(){box.innerHTML='';
+ box.appendChild(grid([N],function(sp,i,j){if(j===si)sp.className='c';else if(j>=S[si]&&j<si)sp.className='r';if(si>=6&&j>=3&&j<=6&&j!==si)sp.className='both';}));
+ var row=N.map(function(_,j){return j<=si?R[j]:'';});
+ box.appendChild(grid([row],function(sp,i,j){if(j===si)sp.className='r';}));
+ document.getElementById('note').textContent=NOTES[si];document.getElementById('pos').textContent=(si+1)+' / '+N.length;
+ document.getElementById('prev').disabled=si===0;document.getElementById('next').disabled=si===N.length-1;}
+document.getElementById('prev').onclick=function(){if(si>0){si--;showStep();}};
+document.getElementById('next').onclick=function(){if(si<N.length-1){si++;showStep();}};
+showStep();
+</script>
+</body>
+</html>
