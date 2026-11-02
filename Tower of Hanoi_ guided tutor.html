@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tower of Hanoi: guided tutor</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6fb;--grid:#dde5f2;--card:#fff;--ink:#16223a;--mute:#53617c;--line:#c9d4e8;--row:#ffd166;--col:#4cc9f0;--hit:#2ec4a0;--code:#101a2e;--codeink:#e6edf9;--accent:#2b59c3;--ok:#1f7a3f;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--grid:#18233a;--card:#16203a;--ink:#e8eefb;--mute:#9db0d3;--line:#2c3b5e;--row:#e0a800;--col:#1b9fc9;--hit:#26a688;--accent:#7ea2ff;--ok:#5cc47f;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#0f1626;--grid:#18233a;--card:#16203a;--ink:#e8eefb;--mute:#9db0d3;--line:#2c3b5e;--row:#e0a800;--col:#1b9fc9;--hit:#26a688;--accent:#7ea2ff;--ok:#5cc47f;--bad:#ff8a80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:740px;margin:0 auto;padding:26px 18px 70px}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0 .2em}
+h2{font-size:1.35rem;margin:0 0 .5em}
+h3{font-size:1.05rem;margin:1em 0 .3em}
+p{margin:.5em 0}
+.lead,.mut{color:var(--mute)}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px 16px;margin:20px 0}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+code{background:var(--grid);padding:1px 6px;border-radius:4px;font-size:.88em}
+pre{background:var(--code);color:var(--codeink);padding:12px 15px;border-radius:8px;overflow-x:auto;font-size:.88rem;line-height:1.55;margin:.7em 0}
+pre code{background:none;padding:0}
+.rule{border-left:4px solid var(--accent);padding:6px 14px;background:var(--grid);border-radius:0 8px 8px 0;margin:.7em 0}
+.mat{display:inline-grid;grid-template-columns:repeat(var(--cols,2),auto);gap:4px;padding:6px 10px;border-left:3px solid var(--ink);border-right:3px solid var(--ink);border-radius:6px;vertical-align:middle}
+.mat span{min-width:2.3rem;height:2.3rem;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--bg);font-family:"JetBrains Mono",monospace;font-weight:700}
+.mat .r{background:var(--row);color:#16223a}.mat .c{background:var(--col);color:#16223a}.mat .both{background:var(--hit);color:#fff}
+.mat .res{cursor:pointer;border:2px dashed var(--line)}.mat .res:focus-visible{outline:3px solid var(--accent)}
+.eq{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;margin:12px 0;font-size:1.5rem}
+.sum{text-align:center;min-height:1.7em;font-family:"JetBrains Mono",monospace;font-size:.92rem}
+button{font:inherit;cursor:pointer;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;padding:5px 13px}
+button:hover:not(:disabled){background:var(--accent);color:#fff}button:disabled{opacity:.4;cursor:default}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+details{border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:.6em 0;background:var(--bg)}
+details details{background:var(--card)}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--grid)}
+ul{padding-left:1.2em;margin:.4em 0}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--grid);font-size:.85rem}.pass{color:var(--ok);font-weight:700}
+.step{border-left:4px solid var(--accent);padding-left:14px;margin:1.1em 0}.q{font-weight:700}
+.opt{display:block;width:100%;text-align:left;margin:.3em 0}.opt.right{border-color:var(--ok);background:var(--grid);color:var(--ink)}.opt.wrong{border-color:var(--bad);color:var(--ink)}.fb{min-height:1.4em}
+@media (max-width:520px){body{font-size:16px}section{padding:16px 14px}h1{font-size:1.6rem}.mat span{min-width:1.9rem;height:1.9rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<h1>Tower of Hanoi: recursion as a recipe</h1>
+<p class="lead">By the end you will write <code>hanoi()</code> yourself and trust each smaller call to do its job. About 25 to 30 minutes.</p>
+
+<section>
+<h2>1. Understanding the problem</h2>
+<p>Picture three pegs and <code>n</code> disks of different sizes stacked on one peg, smallest on top. You must move the whole stack to another peg, one disk at a time, taking only the top disk of a stack. The three pegs have jobs: <code>source</code> (where the stack starts), <code>target</code> (where it must end) and <code>helper</code> (a spare parking spot).</p>
+<div class="rule"><b>Rule:</b> never put a larger disk on top of a smaller one. That is the whole difficulty: without it you could just hop every disk to the target.</div>
+<p>Your function moves nothing. It <b>returns a list of moves</b> in order, each move a pair <code>(from_peg, to_peg)</code>. Returning (not printing) matters because a list can be counted, compared and tested, while printed text just disappears.</p>
+<ul><li>Recursive, with no loops inside <code>hanoi</code>.</li><li>No <code>print</code> inside it, and no imports.</li><li>Outside it: print the move count for n = 1 to 10 and spot the pattern.</li></ul>
+</section>
+
+<section>
+<h2>2. The prerequisite idea: a recipe that calls itself</h2>
+<p>A recipe can say "add the sauce (see the sauce recipe)". A <b>recursive function</b> does the same: it asks <i>itself</i> to solve a <b>smaller</b> version and uses the answer. Two parts make it work. The <b>base case</b> is a version so small you answer it directly, with no further calls. The <b>recursive call</b> hands a smaller problem to the same function, and you <b>trust</b> it to return the right answer, without tracing how.</p>
+<pre>def count_down(n):
+    if n == 0:               # base case: nothing left to do
+        return []
+    return [n] + count_down(n - 1)   # my piece + the smaller answer
+
+move = ("A", "C")            # one move: a pair (a tuple)
+moves = [move]               # a list holding one move
+both = [("A", "B")] + [("B", "C")]   # + joins two lists into one</pre>
+<div class="quiz" data-correct="1" data-ok="Right. Square brackets make the list; the parentheses make the pair inside it." data-no="Not quite. Look at the outer brackets: is it a list, and is the move inside it a pair?"><p class="q">Which value is a list that holds exactly one move?</p>
+<button class="opt">("A", "C")</button><button class="opt">[("A", "C")]</button><button class="opt">["A", "C"]</button><p class="fb"></p></div>
+<div class="quiz" data-correct="1" data-ok="Right: [2] + count_down(1), and count_down(1) is [1] + []." data-no="Not quite. Work it from the inside: count_down(0) first, then build back up, with the current n going on the left."><p class="q">What does <code>count_down(2)</code> return?</p>
+<button class="opt">[2]</button><button class="opt">[2, 1]</button><button class="opt">[1, 2]</button><p class="fb"></p></div>
+</section>
+
+<section>
+<h2>3. How it works, by hand</h2>
+<p>Here is the given 3-disk example, one move at a time. Disk 1 is the smallest. <span class="mut">Green = the disk that just moved.</span></p>
+<div class="eq" id="grids"></div>
+<div class="sum" id="note"></div>
+<p style="text-align:center"><button id="prev">Back</button> <button id="next">Next</button> <span class="pill" id="pos"></span></p>
+<div class="step"><p class="q">Look at move 4, the only move of disk 3. Where are disks 1 and 2 at that moment? What do moves 1 to 3 and moves 5 to 7 have in common?</p>
+<details><summary>Reveal</summary>Disks 1 and 2 are stacked on B. Moves 1 to 3 carry the two small disks out of the way; moves 5 to 7 carry them back on top. Each group is a smaller Tower of Hanoi where the pegs play different jobs. Your function never needs to know <i>how</i> the small tower moves, only that a call can do it.</details></div>
+<h3>Practice by hand</h3>
+<p><b>P1 (easy).</b> Write the moves for <code>hanoi(2, "A", "C", "B")</code>.
+<details><summary>Reveal</summary>[("A","B"), ("A","C"), ("B","C")]. Small disk to B, big disk to C, small disk onto C.</details></p>
+<p><b>P2 (medium).</b> Take the 3-disk answer from the problem but with pegs named X, Y, Z: <code>hanoi(3, "X", "Z", "Y")</code>. Write the first and last move.
+<details><summary>Reveal</summary>Both are ("X","Z"). The answer is the given one with A→X, B→Y, C→Z. Peg names are just labels.</details></p>
+<p><b>P3 (harder).</b> Without running anything: how many moves for 4 disks, and which move number carries disk 4?
+<details><summary>Reveal</summary>15 moves: 7 to clear the way, 1 for the big disk (move number 8), 7 to put the tower back.</details></p>
+</section>
+
+<section>
+<h2>4. Translating it into Python</h2>
+<p>Five small tasks. Try each question before opening anything.</p>
+<div class="step"><p><b>Step 1: The base case.</b> The smallest problem you can answer without any call.</p>
+<p class="q">What is the smallest tower, and what list of moves does it need?</p>
+<details><summary>Reveal</summary>One disk needs one move, source to target. (Zero disks needing an empty list also works. Pick one.)</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>Which value of n needs no help from a smaller tower?</details>
+<details><summary>Bigger hint</summary>Even the simplest case must return a <i>list</i>, because the other cases will join lists.</details>
+<details><summary>Pseudocode</summary>If n is the smallest case: give back the list holding the right move(s), and stop.</details></details></div>
+<div class="step"><p><b>Step 2: Clear the way.</b> Get the smaller tower off the biggest disk.</p>
+<p class="q">Where must the n−1 smaller disks sit so the biggest disk can move? For <i>that</i> smaller job, which peg is start, end and spare?</p>
+<details><summary>Reveal</summary>They can't stay on source (the big disk is under them) or go to target (the big disk lands there), so they go to the helper. In that job, source is the start, helper is the end, target is the spare.</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>Check move 4 in the stepper again.</details>
+<details><summary>Bigger hint</summary>This is the same puzzle with n−1 disks, so call <code>hanoi</code> again. The three names you pass in decide each peg's job.</details>
+<details><summary>Pseudocode</summary>first_part = the moves that carry n−1 disks from source to helper, with target as the spare.</details></details></div>
+<div class="step"><p><b>Step 3: Move the biggest disk.</b> Exactly one move.</p>
+<p class="q">How is one move written, and how do you make it joinable with other lists?</p>
+<details><summary>Reveal</summary>A pair of the peg names you were given, wrapped in square brackets so it is a one-item list (see quiz 1).</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>The biggest disk goes from where it is to where it must end.</details>
+<details><summary>Bigger hint</summary>You already have both peg names as parameters.</details>
+<details><summary>Pseudocode</summary>middle_part = a list containing one pair: from source, to target.</details></details></div>
+<div class="step"><p><b>Step 4: Put the smaller tower back.</b> One more trusted call.</p>
+<p class="q">The n−1 disks now sit on one peg. Where do they start and end this time, and which peg is the spare?</p>
+<details><summary>Reveal</summary>Start on helper, end on target, with source as the spare.</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>Compare with step 2: which pegs swapped jobs?</details>
+<details><summary>Bigger hint</summary>The peg the small tower came from is now empty and free to use as the spare.</details>
+<details><summary>Pseudocode</summary>last_part = the moves that carry n−1 disks from helper to target, with source as the spare.</details></details></div>
+<div class="step"><p><b>Step 5: Join and return.</b></p>
+<p class="q">How do three lists become one, and in which order?</p>
+<details><summary>Reveal</summary>Join with <code>+</code>, in the order the moves actually happen: first part, middle part, last part.</details></div>
+<h3>Your skeleton</h3>
+<p class="mut">Every blank carries real logic. Fill them in yourself, then delete the underscores.</p>
+<pre>def hanoi(n, source, target, helper):
+    # Step 1 (TODO): base case. What do you return, and when?
+    ___
+
+    # Step 2 (TODO): one recursive call that clears the way
+    first_part = ___
+
+    # Step 3 (TODO): the single move of the biggest disk, as a list
+    middle_part = ___
+
+    # Step 4 (TODO): one recursive call that rebuilds the tower on top
+    last_part = ___
+
+    # Step 5 (TODO): join the three parts in order
+    return ___</pre>
+<p><b>No index variable here.</b> With no loop, the thing that changes is <code>n</code>: each call passes a smaller one, so every chain of calls ends at your base case. <code>source</code>, <code>target</code> and <code>helper</code> are <i>jobs</i>, not fixed pegs, so the same function can be called with them shuffled.</p>
+<div class="step"><p><b>Step 6: Count the moves from outside.</b> A loop is fine <i>outside</i> <code>hanoi</code>.</p>
+<pre>for n in range(___, ___):          # TODO: n = 1 up to and including 10
+    moves = hanoi(___, "A", "C", "B")   # TODO
+    print(n, ___)                    # TODO: what do you print?</pre>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary><code>range(a, b)</code> stops <i>before</i> b.</details>
+<details><summary>Bigger hint</summary>You want how many items are in the returned list.</details>
+<details><summary>Pseudocode</summary>For each n from 1 to 10: call hanoi with that n, then print n and the length of the result.</details></details>
+<p><b>Bonus.</b> Same idea with <code>assert</code>: for n from 1 to 12, check <code>len(hanoi(...))</code> equals the formula given in the problem. Silence means it held.</p></div>
+</section>
+
+<section>
+<h2>5. Test and debug</h2>
+<h3>Test cases <span class="pill" id="score">0 / 0 passing</span></h3>
+<div class="tw"><table id="tests">
+<tr><th>Case</th><th>Input</th><th>Expected</th><th>Mine</th></tr>
+<tr><td>n = 1 (given)</td><td class="mono">hanoi(1, "A", "C", "B")</td><td class="mono">[("A","C")]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 2</td><td class="mono">hanoi(2, "A", "C", "B")</td><td class="mono">[("A","B"), ("A","C"), ("B","C")]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 3 (given)</td><td class="mono">hanoi(3, "A", "C", "B")</td><td class="mono">[("A","C"), ("A","B"), ("C","B"), ("A","C"), ("B","A"), ("B","C"), ("A","C")]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 2, other peg names</td><td class="mono">hanoi(2, "X", "Z", "Y")</td><td class="mono">[("X","Y"), ("X","Z"), ("Y","Z")]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 4</td><td class="mono">hanoi(4, "A", "C", "B")</td><td class="mono">[("A","B"), ("A","C"), ("B","C"), ("A","B"), ("C","A"), ("C","B"), ("A","B"), ("A","C"), ("B","C"), ("B","A"), ("C","A"), ("B","C"), ("A","B"), ("A","C"), ("B","C")]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 2 again, after the others</td><td class="mono">hanoi(2, "A", "C", "B")</td><td class="mono">[("A","B"), ("A","C"), ("B","C")]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 0 (optional)</td><td class="mono">hanoi(0, "A", "C", "B")</td><td class="mono">[]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+</table></div>
+<details><summary>Copyable assert block (calls your function only)</summary>
+<pre id="asserts">assert hanoi(1, "A", "C", "B") == [("A","C")]
+assert hanoi(2, "A", "C", "B") == [("A","B"), ("A","C"), ("B","C")]
+assert hanoi(3, "A", "C", "B") == [("A","C"), ("A","B"), ("C","B"), ("A","C"), ("B","A"), ("B","C"), ("A","C")]
+assert hanoi(2, "X", "Z", "Y") == [("X","Y"), ("X","Z"), ("Y","Z")]
+assert hanoi(4, "A", "C", "B") == [("A","B"), ("A","C"), ("B","C"), ("A","B"), ("C","A"), ("C","B"), ("A","B"), ("A","C"), ("B","C"), ("B","A"), ("C","A"), ("B","C"), ("A","B"), ("A","C"), ("B","C")]
+assert hanoi(2, "A", "C", "B") == [("A","B"), ("A","C"), ("B","C")]
+# optional: assert hanoi(0, "A", "C", "B") == []
+print("All tests passed")</pre>
+<button onclick="copyAsserts(this)">Copy</button></details>
+<h3>Common beginner mistakes</h3>
+<ul>
+<li><b>RecursionError: maximum recursion depth exceeded.</b> The chain never reaches the base case. Check that every call passes a smaller n, and that your base case covers where n lands. (The optional n = 0 test fails this way if your base case is n == 1.)</li>
+<li><b>TypeError mentioning NoneType or a tuple and a list.</b> A branch forgot to <code>return</code>, or a single move is not wrapped in <code>[ ]</code>.</li>
+<li><b>Right number of moves, wrong pegs.</b> Two peg names are swapped in one recursive call. Redo P1 by hand and compare.</li>
+<li><b>A list inside a list.</b> You joined pieces in a way that nested them. Print one result and look at the brackets.</li>
+<li><b>Results grow every time you call it.</b> The moves are stored somewhere outside the function. That breaks the pure-function rule; the "n = 2 again" test catches it.</li>
+<li><b>It prints and returns None.</b> Remove the <code>print</code> and return the list.</li>
+</ul>
+</section>
+
+<section>
+<h2>6. Reflection</h2>
+<p>Recursion means solving the biggest piece yourself and trusting the same function for the smaller copy, as long as a base case stops the chain. Here that gave: clear the way, make one move, rebuild. Move counts follow from the same shape.</p>
+<p><b>Q1.</b> When you wrote the call for n−1 disks, how could you trust it without tracing it?
+<details><summary>Reveal</summary>It is the same function, so if it is right for the base case and each step builds correctly on a smaller answer, it is right for every n. You only check one level at a time.</details></p>
+<p><b>Q2.</b> Why do the two recursive calls pass the peg names in different orders?
+<details><summary>Reveal</summary>The pegs change jobs: the small tower first travels source to helper, and later helper to target. Each call needs the right start, end and spare.</details></p>
+<p><b>Q3.</b> What pattern did your counts show, and why must it happen?
+<details><summary>Reveal</summary>Each count is double the previous one plus 1, which equals 2<sup>n</sup> − 1. The two recursive calls each cost the previous count, and the biggest disk adds one move.</details></p>
+</section>
+</main>
+<script>
+
+function tally(){var c=document.querySelectorAll('#tests input[type=checkbox]'),n=0;c.forEach(function(x){if(x.checked)n++;});var s=document.getElementById('score');s.textContent=n+' / '+c.length+' passing';s.className='pill'+(n===c.length&&c.length?' pass':'');}
+function copyAsserts(b){var t=document.getElementById('asserts').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='Copied';},function(){b.textContent='Select and copy manually';});}
+/* grid(M, fn): builds a .mat element from a 2D array; fn(span,row,col) may set span.className to r / c / both / res */
+function grid(M,fn){var g=document.createElement('div');g.className='mat';g.style.setProperty('--cols',M[0].length);
+  M.forEach(function(r,i){r.forEach(function(v,j){var s=document.createElement('span');s.textContent=v;if(fn)fn(s,i,j);g.appendChild(s);});});return g;}
+tally();
+
+document.querySelectorAll('.quiz').forEach(function(q){var o=q.querySelectorAll('.opt'),f=q.querySelector('.fb'),ok=+q.dataset.correct;
+  o.forEach(function(x,i){x.onclick=function(){o.forEach(function(y){y.classList.remove('right','wrong');});
+    if(i===ok){x.classList.add('right');f.textContent=q.dataset.ok;}else{x.classList.add('wrong');f.textContent=q.dataset.no;}};});});
+/* stepper: replays the problem's given 3-disk example */
+var MV=[["A","C"],["A","B"],["C","B"],["A","C"],["B","A"],["B","C"],["A","C"]];
+function cp(o){return JSON.parse(JSON.stringify(o));}
+var P={A:[3,2,1],B:[],C:[]},S=[{p:cp(P),n:'Start: disks 3, 2, 1 on A, biggest at the bottom, smallest on top.'}];
+MV.forEach(function(m,i){var d=P[m[0]].pop();P[m[1]].push(d);S.push({p:cp(P),to:m[1],d:d,n:'Move '+(i+1)+' of 7: disk '+d+' goes '+m[0]+' to '+m[1]+'.'});});
+var si=0,box=document.getElementById('grids');
+function showStep(){var s=S[si];box.innerHTML='';
+  ['A','B','C'].forEach(function(k){var st=s.p[k],M=[2,1,0].map(function(l){return [st[l]===undefined?'\u00b7':st[l]];});
+    var w=document.createElement('div');w.style.textAlign='center';var lb=document.createElement('div');lb.className='mono';lb.textContent=k;w.appendChild(lb);
+    w.appendChild(grid(M,function(sp){if(s.to===k&&+sp.textContent===s.d)sp.className='both';}));box.appendChild(w);});
+  document.getElementById('note').textContent=s.n;document.getElementById('pos').textContent=(si+1)+' / '+S.length;
+  document.getElementById('prev').disabled=si===0;document.getElementById('next').disabled=si===S.length-1;}
+document.getElementById('prev').onclick=function(){if(si>0){si--;showStep();}};
+document.getElementById('next').onclick=function(){if(si<S.length-1){si++;showStep();}};
+showStep();
+</script>
+</body>
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pascal's Triangle: guided tutor</title>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f3f6fb;--grid:#dde5f2;--card:#fff;--ink:#16223a;--mute:#53617c;--line:#c9d4e8;--row:#ffd166;--col:#4cc9f0;--hit:#2ec4a0;--code:#101a2e;--codeink:#e6edf9;--accent:#2b59c3;--ok:#1f7a3f;--bad:#b3261e;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0f1626;--grid:#18233a;--card:#16203a;--ink:#e8eefb;--mute:#9db0d3;--line:#2c3b5e;--row:#e0a800;--col:#1b9fc9;--hit:#26a688;--accent:#7ea2ff;--ok:#5cc47f;--bad:#ff8a80}}
+:root[data-theme="dark"]{--bg:#0f1626;--grid:#18233a;--card:#16203a;--ink:#e8eefb;--mute:#9db0d3;--line:#2c3b5e;--row:#e0a800;--col:#1b9fc9;--hit:#26a688;--accent:#7ea2ff;--ok:#5cc47f;--bad:#ff8a80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background-color:var(--bg);background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px);background-size:28px 28px;color:var(--ink);font:17px/1.6 "Atkinson Hyperlegible",system-ui,sans-serif}
+main{max-width:740px;margin:0 auto;padding:26px 18px 70px}
+h1{font-size:2rem;line-height:1.15;margin:.2em 0 .2em}
+h2{font-size:1.35rem;margin:0 0 .5em}
+h3{font-size:1.05rem;margin:1em 0 .3em}
+p{margin:.5em 0}
+.lead,.mut{color:var(--mute)}
+section{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:20px 22px 16px;margin:20px 0}
+code,pre,.mono{font-family:"JetBrains Mono",ui-monospace,Menlo,monospace}
+code{background:var(--grid);padding:1px 6px;border-radius:4px;font-size:.88em}
+pre{background:var(--code);color:var(--codeink);padding:12px 15px;border-radius:8px;overflow-x:auto;font-size:.88rem;line-height:1.55;margin:.7em 0}
+pre code{background:none;padding:0}
+.rule{border-left:4px solid var(--accent);padding:6px 14px;background:var(--grid);border-radius:0 8px 8px 0;margin:.7em 0}
+.mat{display:inline-grid;grid-template-columns:repeat(var(--cols,2),auto);gap:4px;padding:6px 10px;border-left:3px solid var(--ink);border-right:3px solid var(--ink);border-radius:6px;vertical-align:middle}
+.mat span{min-width:2.3rem;height:2.3rem;display:flex;align-items:center;justify-content:center;border-radius:6px;background:var(--bg);font-family:"JetBrains Mono",monospace;font-weight:700}
+.mat .r{background:var(--row);color:#16223a}.mat .c{background:var(--col);color:#16223a}.mat .both{background:var(--hit);color:#fff}
+.mat .res{cursor:pointer;border:2px dashed var(--line)}.mat .res:focus-visible{outline:3px solid var(--accent)}
+.eq{display:flex;flex-wrap:wrap;gap:14px;align-items:center;justify-content:center;margin:12px 0;font-size:1.5rem}
+.sum{text-align:center;min-height:1.7em;font-family:"JetBrains Mono",monospace;font-size:.92rem}
+button{font:inherit;cursor:pointer;border:1px solid var(--accent);background:transparent;color:var(--accent);border-radius:8px;padding:5px 13px}
+button:hover:not(:disabled){background:var(--accent);color:#fff}button:disabled{opacity:.4;cursor:default}
+button:focus-visible,summary:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+details{border:1px solid var(--line);border-radius:8px;padding:8px 14px;margin:.6em 0;background:var(--bg)}
+details details{background:var(--card)}
+summary{cursor:pointer;font-weight:700;color:var(--accent)}
+.tw{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{border:1px solid var(--line);padding:6px 9px;text-align:left;vertical-align:top}
+th{background:var(--grid)}
+ul{padding-left:1.2em;margin:.4em 0}
+.pill{display:inline-block;padding:2px 10px;border-radius:99px;background:var(--grid);font-size:.85rem}.pass{color:var(--ok);font-weight:700}
+.step{border-left:4px solid var(--accent);padding-left:14px;margin:1.1em 0}.q{font-weight:700}
+.opt{display:block;width:100%;text-align:left;margin:.3em 0}.opt.right{border-color:var(--ok);background:var(--grid);color:var(--ink)}.opt.wrong{border-color:var(--bad);color:var(--ink)}.fb{min-height:1.4em}
+@media (max-width:520px){body{font-size:16px}section{padding:16px 14px}h1{font-size:1.6rem}.mat span{min-width:1.9rem;height:1.9rem}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+<h1>Pascal's Triangle</h1>
+<p class="lead">By the end you will build each row from the one above it, using nested loops, and print it as a neat triangle. About 25 to 30 minutes.</p>
+
+<section>
+<h2>1. Understanding the problem</h2>
+<p>Pascal's Triangle is a pyramid of numbers. <code>pascal_rows(n)</code> returns the first <code>n</code> rows as a list of lists, top row first. Row numbers here start at 0, so the top row <code>[1]</code> is row 0 and row <code>i</code> holds <code>i + 1</code> numbers.</p>
+<div class="rule"><b>Rule:</b> a row starts and ends with 1. Every number in between is the sum of the two numbers directly above it (up-left and up-right) in the previous row. The ends are the exception because they only have one number above them.</div>
+<p>For <code>n = 0</code> the answer is an empty list. The function returns the rows and prints nothing, so the data can be tested and reused; showing it as a triangle is a separate job done outside.</p>
+<ul><li>Nested loops, building each row from the previous row.</li><li>No factorials or formulas, no <code>math</code>, no list comprehensions, no imports.</li><li>Print the triangle outside the function, adding the leading spaces yourself (no <code>.center()</code>).</li></ul>
+</section>
+
+<section>
+<h2>2. The prerequisite idea: lists inside a list</h2>
+<p>A <b>list of lists</b> holds rows. An <b>index</b> is a position number starting at 0. <code>grid[1]</code> is the second row; <code>grid[1][0]</code> is the first item in that row. A negative index counts from the end, so <code>grid[-1]</code> is the last row.</p>
+<pre>grid = [[7], [8, 9]]
+print(grid[1][0])        # one row, then one item
+grid.append([4, 5, 6])   # add a whole row at the end
+last = grid[-1]          # the most recent row
+print(len(last))         # how many items it holds
+
+for k in range(2, 5):    # counts 2, 3, 4 (stops BEFORE 5)
+    print(k)</pre>
+<div class="quiz" data-correct="2" data-ok="Right: grid[1] is [8, 9], and its position 0 holds 8." data-no="Not quite. Take grid[1] first to get a row, then the position inside that row."><p class="q">What does <code>print(grid[1][0])</code> show for the first line of that snippet?</p>
+<button class="opt">7</button><button class="opt">9</button><button class="opt">8</button><p class="fb"></p></div>
+<div class="quiz" data-correct="0" data-ok="Right: it starts at 1 and stops before 4." data-no="Not quite. The first number is included; the last number is not."><p class="q">Which numbers does <code>range(1, 4)</code> give?</p>
+<button class="opt">1, 2, 3</button><button class="opt">1, 2, 3, 4</button><button class="opt">0, 1, 2, 3</button><p class="fb"></p></div>
+</section>
+
+<section>
+<h2>3. How it works, by hand</h2>
+<p>Here is row 4 (<code>[1, 4, 6, 4, 1]</code>) built from row 3, one spot at a time. <span class="mut">Yellow = up-left, blue = up-right, green = the number just placed.</span></p>
+<div class="eq" id="grids"></div>
+<div class="sum" id="note"></div>
+<p style="text-align:center"><button id="prev">Back</button> <button id="next">Next</button> <span class="pill" id="pos"></span></p>
+<div class="rule"><b>Size rule:</b> row <code>i</code> has <code>i + 1</code> numbers, two of which are the 1s at the ends. So only <code>i - 1</code> spots need a sum.</div>
+<div class="step"><p class="q">For spot <code>j</code> in the new row, which two positions in the previous row do you add?</p>
+<details><summary>Reveal</summary>Positions <code>j - 1</code> and <code>j</code> of the previous row. Check in the stepper: spot 2 added positions 1 and 2.</details></div>
+<h3>Practice by hand</h3>
+<p><b>P1 (easy).</b> Build the row after <code>[1, 4, 6, 4, 1]</code>.
+<details><summary>Reveal</summary>[1, 5, 10, 10, 5, 1]: 1+4=5, 4+6=10, 6+4=10, 4+1=5, with a 1 at each end.</details></p>
+<p><b>P2 (medium).</b> Build row 1 from row 0, which is <code>[1]</code>. How many sums do you need?
+<details><summary>Reveal</summary>None. Row 1 has two numbers and both are ends: [1, 1]. This is why small rows are special.</details></p>
+<p><b>P3 (harder).</b> Row 6 has how many numbers, and how many need a sum? Then write it.
+<details><summary>Reveal</summary>7 numbers, 5 sums. Row 6 is [1, 6, 15, 20, 15, 6, 1].</details></p>
+</section>
+
+<section>
+<h2>4. Translating it into Python</h2>
+<div class="step"><p><b>Step 1: A place to collect rows, and one pass per row.</b></p>
+<p class="q">What does the result start as (think of <code>n = 0</code>), and what should the outer loop count over?</p>
+<details><summary>Reveal</summary>It starts as an empty list, so n = 0 returns [] with no special case. The loop runs once per row, with row numbers 0 up to n - 1.</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>If the loop never runs, what is left in the container?</details>
+<details><summary>Bigger hint</summary>You want exactly n passes, and the pass number doubles as the row number.</details>
+<details><summary>Pseudocode</summary>Make an empty list for rows. Repeat once for each row number from 0 to n - 1.</details></details></div>
+<div class="step"><p><b>Step 2: Start the new row.</b></p>
+<p class="q">What do all rows have in common at the front?</p>
+<details><summary>Reveal</summary>They begin with 1, so the new row can start as a list holding just that.</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>Row 0 is only this.</details>
+<details><summary>Bigger hint</summary>Make a fresh list each pass. If you reuse the previous list, you will change the old row too.</details>
+<details><summary>Pseudocode</summary>new_row = a brand new list containing the number 1.</details></details></div>
+<div class="step"><p><b>Step 3: Fill the middle from the previous row.</b></p>
+<p class="q">When is there a previous row at all? Which spots need a sum, and which two items do you add for spot <code>j</code>?</p>
+<details><summary>Reveal</summary>From row 1 onward. Spots 1 up to row number - 1 need a sum, adding positions j - 1 and j of the previous row.</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>Use P3: which spot numbers did the sums fill?</details>
+<details><summary>Bigger hint</summary>The previous row is the last row you stored. Remember <code>range</code> stops before its second number.</details>
+<details><summary>Pseudocode</summary>If this is not the first row: take the last stored row as prev. For j from 1 up to the last middle spot: add prev at j - 1 plus prev at j to new_row.</details></details></div>
+<div class="step"><p><b>Step 4: Finish the row and store it.</b></p>
+<p class="q">How does a row (after row 0) end, and where does the finished row go?</p>
+<details><summary>Reveal</summary>It ends with 1, added after the sums. Then it is appended to the rows list.</details>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary>Both ends of a row are 1, but row 0 has only one number.</details>
+<details><summary>Bigger hint</summary>Add the ending 1 only when there is a previous row, inside that same check. Store every row, including row 0.</details>
+<details><summary>Pseudocode</summary>After the middle: add a 1 to the end of new_row. Then add new_row to rows. When the loop is over, give back rows.</details></details></div>
+<h3>Your skeleton</h3>
+<p class="mut">Every blank carries real logic. Fill them in yourself, then delete the underscores.</p>
+<pre>def pascal_rows(n):
+    rows = ___                     # TODO: the container (what if n is 0?)
+    for i in ___:                  # TODO: one pass per row
+        new_row = ___              # TODO: how every row begins
+        if ___:                    # TODO: when does a previous row exist?
+            prev = ___             # TODO: fetch the previous row
+            for j in ___:          # TODO: the spots that need a sum
+                new_row.append(___)   # TODO: up-left + up-right
+            new_row.___(___)       # TODO: how a row ends
+        rows.___(___)              # TODO: store the finished row
+    return ___                     # TODO</pre>
+<p><b>Index variables.</b> <code>i</code> is the row number (0-based), which also tells you the row has <code>i + 1</code> numbers. <code>j</code> is a spot inside the new row; the numbers above it sit at <code>prev[j - 1]</code> (up-left) and <code>prev[j]</code> (up-right). The outer loop moves down the triangle; the inner loop moves across one row.</p>
+<div class="step"><p><b>Step 5: Print the triangle from outside.</b></p>
+<p class="q">In the n = 5 picture, how many leading spaces does row 0 have? Row 4? What is the rule for row <code>i</code>?</p>
+<details><summary>Reveal</summary>Row 0 has 4 spaces, row 4 has 0, so row i has n - 1 - i. (Numbers with two digits will nudge the shape a bit; that is fine here.)</details>
+<pre>n = 5
+rows = pascal_rows(n)
+for i in ___:                 # TODO: go through the rows
+    text = ___                # TODO: start with the leading spaces
+    for number in ___:        # TODO: the numbers in this row
+        text = ___            # TODO: glue on the number and a single space
+    print(text)</pre>
+<details><summary>Stuck?</summary><details><summary>Nudge</summary><code>" " * 3</code> gives three spaces, and <code>str(7)</code> gives the text "7".</details>
+<details><summary>Bigger hint</summary>Build one string per row, starting with the spaces, then add each number turned into text.</details>
+<details><summary>Pseudocode</summary>For each row number i: text = (n - 1 - i) spaces. For each number in that row: add the number as text, then one space. Print text.</details></details></div>
+</section>
+
+<section>
+<h2>5. Test and debug</h2>
+<h3>Test cases <span class="pill" id="score">0 / 0 passing</span></h3>
+<div class="tw"><table id="tests">
+<tr><th>Case</th><th>Input</th><th>Expected</th><th>Mine</th></tr>
+<tr><td>n = 5 (given)</td><td class="mono">pascal_rows(5)</td><td class="mono">[[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 1 (given)</td><td class="mono">pascal_rows(1)</td><td class="mono">[[1]]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 0 (given)</td><td class="mono">pascal_rows(0)</td><td class="mono">[]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 2</td><td class="mono">pascal_rows(2)</td><td class="mono">[[1], [1, 1]]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 3</td><td class="mono">pascal_rows(3)</td><td class="mono">[[1], [1, 1], [1, 2, 1]]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 6 (has 5 and 10)</td><td class="mono">pascal_rows(6)</td><td class="mono">[[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1], [1, 5, 10, 10, 5, 1]]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 8</td><td class="mono">pascal_rows(8)</td><td class="mono">[[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1], [1, 5, 10, 10, 5, 1], [1, 6, 15, 20, 15, 6, 1], [1, 7, 21, 35, 35, 21, 7, 1]]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr><tr><td>n = 3 again, after the others</td><td class="mono">pascal_rows(3)</td><td class="mono">[[1], [1, 1], [1, 2, 1]]</td><td><label><input type="checkbox" onchange="tally()"> passes</label></td></tr>
+</table></div>
+<details><summary>Copyable assert block (calls your function only)</summary>
+<pre id="asserts">assert pascal_rows(5) == [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1]]
+assert pascal_rows(1) == [[1]]
+assert pascal_rows(0) == []
+assert pascal_rows(2) == [[1], [1, 1]]
+assert pascal_rows(3) == [[1], [1, 1], [1, 2, 1]]
+assert pascal_rows(6) == [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1], [1, 5, 10, 10, 5, 1]]
+assert pascal_rows(8) == [[1], [1, 1], [1, 2, 1], [1, 3, 3, 1], [1, 4, 6, 4, 1], [1, 5, 10, 10, 5, 1], [1, 6, 15, 20, 15, 6, 1], [1, 7, 21, 35, 35, 21, 7, 1]]
+assert pascal_rows(3) == [[1], [1, 1], [1, 2, 1]]
+print("All tests passed")</pre>
+<button onclick="copyAsserts(this)">Copy</button></details>
+<h3>Common beginner mistakes</h3>
+<ul>
+<li><b>IndexError: list index out of range.</b> The inner loop reaches too far, or it runs on row 0 where there is no previous row. Check the last <code>j</code> against P3.</li>
+<li><b>Rows are missing the last 1, or every row has the wrong length by one.</b> Compare row 2 with <code>[1, 2, 1]</code> and count the numbers.</li>
+<li><b>Wrong number of rows.</b> The outer loop is off by one, so print <code>len(result)</code> for n = 3.</li>
+<li><b>n = 0 gives <code>[[1]]</code> instead of <code>[]</code>.</b> The container started with a row already in it.</li>
+<li><b>Old rows change or repeat.</b> The new row is the same list as the previous one. Make a fresh list each pass.</li>
+<li><b>Results keep growing between calls.</b> The rows are stored outside the function. The "again" test catches it.</li>
+<li><b>It prints and returns None.</b> Remove the <code>print</code> and return the list.</li>
+</ul>
+</section>
+
+<section>
+<h2>6. Reflection</h2>
+<p>Each row is built only from the one before it: a 1 at each end, and sums of neighbours in between. A loop over rows holds an inner loop over spots, and displaying the result is a separate job from computing it.</p>
+<p><b>Q1.</b> Why can't the two end numbers use the same "add two above" rule?
+<details><summary>Reveal</summary>They only have one number above them (the other side is outside the triangle), so there is nothing to add. That is why they are fixed at 1.</details></p>
+<p><b>Q2.</b> Why does the inner loop do nothing for rows 0 and 1, and why is that fine?
+<details><summary>Reveal</summary>Row i needs i - 1 sums, which is 0 or fewer for those rows, so the range is empty and the loop body never runs. They are just the ends, which is correct.</details></p>
+<p><b>Q3.</b> What do you gain by returning the rows instead of printing them inside the function?
+<details><summary>Reveal</summary>The data can be tested with <code>==</code>, reused (to print, count or look up a number), and displayed in different ways, such as the triangle shape, which depends on n and not on how rows are built.</details></p>
+</section>
+</main>
+<script>
+
+function tally(){var c=document.querySelectorAll('#tests input[type=checkbox]'),n=0;c.forEach(function(x){if(x.checked)n++;});var s=document.getElementById('score');s.textContent=n+' / '+c.length+' passing';s.className='pill'+(n===c.length&&c.length?' pass':'');}
+function copyAsserts(b){var t=document.getElementById('asserts').textContent;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(function(){b.textContent='Copied';},function(){b.textContent='Select and copy manually';});}
+/* grid(M, fn): builds a .mat element from a 2D array; fn(span,row,col) may set span.className to r / c / both / res */
+function grid(M,fn){var g=document.createElement('div');g.className='mat';g.style.setProperty('--cols',M[0].length);
+  M.forEach(function(r,i){r.forEach(function(v,j){var s=document.createElement('span');s.textContent=v;if(fn)fn(s,i,j);g.appendChild(s);});});return g;}
+tally();
+
+document.querySelectorAll('.quiz').forEach(function(q){var o=q.querySelectorAll('.opt'),f=q.querySelector('.fb'),ok=+q.dataset.correct;
+  o.forEach(function(x,i){x.onclick=function(){o.forEach(function(y){y.classList.remove('right','wrong');});
+    if(i===ok){x.classList.add('right');f.textContent=q.dataset.ok;}else{x.classList.add('wrong');f.textContent=q.dataset.no;}};});});
+/* stepper: row 3 -> row 4 of the triangle */
+var PREV=[1,3,3,1],NEW=[1,4,6,4,1],S=[{f:1,n:'Row 4 has 5 numbers, built left to right from row 3. Every row starts with 1.'}];
+for(var j=1;j<=3;j++)S.push({f:j+1,j:j,n:'Spot '+j+': above it are '+PREV[j-1]+' and '+PREV[j]+', so '+PREV[j-1]+' + '+PREV[j]+' = '+NEW[j]+'.'});
+S.push({f:5,n:'The last spot has only one number above it, so it is just 1. Row 4 is done.'});
+var si=0,box=document.getElementById('grids');box.style.flexDirection='column';
+function lab(t){var d=document.createElement('div');d.className='mono mut';d.style.fontSize='.8rem';d.textContent=t;return d;}
+function showStep(){var s=S[si];box.innerHTML='';
+  box.appendChild(lab('row 3 (above)'));
+  box.appendChild(grid([PREV],function(sp,i,k){if(s.j&&k===s.j-1)sp.className='r';if(s.j&&k===s.j)sp.className='c';}));
+  box.appendChild(lab('row 4 (being built)'));
+  box.appendChild(grid([NEW.map(function(v,k){return k<s.f?v:'';})],function(sp,i,k){if(k===s.f-1)sp.className='both';}));
+  document.getElementById('note').textContent=s.n;document.getElementById('pos').textContent=(si+1)+' / '+S.length;
+  document.getElementById('prev').disabled=si===0;document.getElementById('next').disabled=si===S.length-1;}
+document.getElementById('prev').onclick=function(){if(si>0){si--;showStep();}};
+document.getElementById('next').onclick=function(){if(si<S.length-1){si++;showStep();}};
+showStep();
+</script>
+</body>
+</html>
